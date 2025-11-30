@@ -14,7 +14,7 @@ from odoo.api import Environment
 from odoo.exceptions import AccessError, MissingError, UserError, ValidationError
 from odoo.service.model import MAX_TRIES_ON_CONCURRENCY_FAILURE
 
-from odoo.addons.base.models.res_partner import Partner
+from odoo.addons.base.models.res_partner import ResPartner
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, status
 from fastapi.responses import JSONResponse
@@ -67,15 +67,15 @@ async def get_lang(env: Annotated[Environment, Depends(odoo_env)]):
 
 @router.get("/demo/who_ami")
 async def who_ami(
-    partner: Annotated[Partner, Depends(authenticated_partner)],
+    ResPartner: Annotated[ResPartner, Depends(authenticated_partner)],
 ) -> DemoUserInfo:
     """Who am I?
 
-    Returns the authenticated partner
+    Returns the authenticated ResPartner
     """
-    # This method show you how you can rget the authenticated partner without
+    # This method show you how you can rget the authenticated ResPartner without
     # depending on a specific implementation.
-    return DemoUserInfo(name=partner.name, display_name=partner.display_name)
+    return DemoUserInfo(name=ResPartner.name, display_name=ResPartner.display_name)
 
 
 @router.get(
@@ -88,7 +88,7 @@ async def endpoint_app_info(
     """Returns the current endpoint configuration"""
     # This method show you how to get access to current endpoint configuration
     # It also show you how you can specify a dependency to force the security
-    # even if the method doesn't require the authenticated partner as parameter
+    # even if the method doesn't require the authenticated ResPartner as parameter
     return DemoEndpointAppInfo.model_validate(endpoint)
 
 

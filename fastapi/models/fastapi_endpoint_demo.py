@@ -6,7 +6,7 @@ from odoo import _, api, fields, models
 from odoo.api import Environment
 from odoo.exceptions import ValidationError
 
-from odoo.addons.base.models.res_partner import Partner
+from odoo.addons.base.models.res_partner import ResPartner
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import APIKeyHeader
@@ -90,15 +90,15 @@ def api_key_based_authenticated_partner_impl(
         ),
     ],
     env: Annotated[Environment, Depends(odoo_env)],
-) -> Partner:
+) -> ResPartner:
     """A dummy implementation that look for a user with the same login
     as the provided api key
     """
-    partner = (
+    ResPartner = (
         env["res.users"].sudo().search([("login", "=", api_key)], limit=1).partner_id
     )
-    if not partner:
+    if not ResPartner:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect API Key"
         )
-    return partner
+    return ResPartner
